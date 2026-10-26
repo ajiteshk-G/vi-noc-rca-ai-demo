@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Presenter Walkthrough &amp; Architecture — Vi SuperNOC AI Copilot</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+  <style>
+    .wt-container {
+      max-width: 1240px;
+      margin: 24px auto 64px;
+      padding: 0 24px;
+    }
+    .wt-arch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin: 16px 0;
+    }
+    @media (max-width: 900px) {
+      .wt-arch-grid { grid-template-columns: 1fr; }
+    }
+    .wt-arch-box {
+      background: var(--bg-surface-alt);
+      border: 2px solid var(--border-warm);
+      border-top: 5px solid var(--vi-red);
+      border-radius: 16px;
+      padding: 18px;
+    }
+    .wt-arch-box.yellow-top {
+      border-top-color: var(--vi-yellow);
+    }
+    .wt-arch-box.green-top {
+      border-top-color: var(--status-resolved);
+    }
+    .wt-shot-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-top: 16px;
+    }
+    @media (max-width: 960px) {
+      .wt-shot-grid { grid-template-columns: 1fr; }
+    }
+    .wt-shot-card {
+      background: var(--bg-surface-alt);
+      border: 1.5px solid var(--border-warm);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: var(--shadow-card);
+    }
+    .wt-shot-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .wt-shot-caption {
+      padding: 12px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .wt-step-block {
+      background: var(--bg-surface-alt);
+      border-left: 5px solid var(--vi-red);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-bottom: 16px;
+    }
+    .wt-step-block h4 {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+    .wt-step-block ul {
+      padding-left: 20px;
+    }
+    .wt-step-block li {
+      margin-bottom: 6px;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Strip -->
+  <div class="vi-top-strip">
+    <div class="vi-top-strip-left">
+      <span class="vi-strip-pill"><span class="dot-yellow"></span> Vi SuperNOC • Executive Demo Walkthrough &amp; Architecture</span>
+      <span>1,000 Resolved Historical Tickets • 100 Live Open Incidents • Gemini 3.8 Flash</span>
+    </div>
+    <div class="vi-top-strip-right">
+      <a href="/" style="color:var(--vi-yellow-bright);font-weight:800;text-decoration:none;">← Return to Live NOC Application</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="vi-header">
+    <div class="vi-brand-group">
+      <div class="vi-logo-box">
+        <svg width="42" height="42" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M54.9693 12.4021C54.9693 15.9539 52.0904 18.8331 48.5384 18.8331C44.9867 18.8331 42.1074 15.9539 42.1074 12.4021C42.1074 8.8504 44.9867 5.97119 48.5384 5.97119C52.0904 5.97119 54.9693 8.8504 54.9693 12.4021Z" fill="#FFD300"/>
+          <path d="M54.6966 22.335H43.459V53.9399H54.6966V22.335Z" fill="#EE2737"/>
+          <path d="M13.0261 54.1588H24.1806L16.2231 22.5547H4.96875L13.0261 54.1588Z" fill="#EE2737"/>
+          <path d="M32.0314 54.1588H20.877L28.8345 22.5547H40.0888L32.0314 54.1588Z" fill="#EE2737"/>
+        </svg>
+      </div>
+      <div class="vi-brand-titles">
+        <h1>
+          Vi SuperNOC AI — Presenter Walkthrough &amp; Script
+          <span class="vi-tag-yellow">Together for Tomorrow</span>
+        </h1>
+        <div class="vi-brand-subtitle">Complete Demo Script, System Architecture &amp; Talk Track for Vodafone Idea NOC Leadership</div>
+      </div>
+    </div>
+
+    <div class="vi-header-actions">
+      <a href="/" class="vi-btn-primary" style="text-decoration:none;">🚀 Launch Live Demo Console</a>
+    </div>
+  </header>
+
+  <main class="wt-container">
+
+    <!-- Overview Hero -->
+    <div class="vi-hero-inner" style="margin-bottom:22px;">
+      <div class="vi-hero-copy">
+        <div class="vi-hero-eyebrow">📖 Executive Demo Script &amp; Walkthrough</div>
+        <h2>"Rule-Less" Telco NOC RCA &amp; Trouble Ticket Copilot Powered by Google Cloud (Gemini 3.8 Flash)</h2>
+        <p>
+          Designed for the Vodafone Idea (Vi) Network Operations Center (NOC) leadership team. Demonstrates how Gemini &amp; Vertex AI eliminate manual OSS correlation rules across <strong>1,000 Historical Resolved Tickets</strong> and <strong>100 Live Open Incidents</strong> spanning Mobile RAN, IP/Optical Transport, and 5G SA Core.
+        </p>
+      </div>
+      <div class="vi-hero-badges">
+        <div class="vi-hero-stat">
+          <span class="stat-val">1,000</span>
+          <span class="stat-lbl">Historical Tickets</span>
+        </div>
+        <div class="vi-hero-stat">
+          <span class="stat-val">100</span>
+          <span class="stat-lbl">Open Active Queue</span>
+        </div>
+        <div class="vi-hero-stat">
+          <span class="stat-val">98.4%</span>
+          <span class="stat-lbl">Golden Cluster Match</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Architecture -->
+    <div class="vi-section-card">
+      <div class="section-title-group">
+        <h3>🏗️ End-to-End Architecture &amp; Synchronized Data Flow</h3>
+        <p>How Historical Knowledge Extraction (Tab 1) feeds Real-Time Cross-Domain Triage (Tab 2) and Closed-Loop CLI Remediation (Tab 3)</p>
+      </div>
+
+      <div class="wt-arch-grid">
+        <div class="wt-arch-box">
+          <div class="badge badge-p1" style="margin-bottom:8px;">1. Institutional Knowledge Base (Tab 1)</div>
+          <h4 style="font-size:15.5px;font-weight:800;margin-bottom:6px;">1,000 Resolved Historical Tickets</h4>
+          <p style="font-size:13px;color:var(--text-secondary);">
+            • <strong>Domain Split:</strong> 450 RAN (45%) | 300 Transport (30%) | 250 5G Core (25%)<br/>
+            • <strong>Golden Correlation Cluster:</strong> 46 coordinated records (<code>INC-Telco-78500</code>–<code>78545</code>, <code>RFO-Telco-2026-0811</code>) where Transport <code>VLAN 402 MTU=1420B</code> truncated DF-marked N4 PFCP frames and caused Pune VoNR call drops.<br/>
+            • <strong>6 Systemic Failure Clusters</strong> automatically extracted without manual rules.
+          </p>
+        </div>
+
+        <div class="wt-arch-box yellow-top">
+          <div class="badge badge-p2" style="margin-bottom:8px;">2. Google Cloud Vertex AI Engine</div>
+          <h4 style="font-size:15.5px;font-weight:800;margin-bottom:6px;">Gemini 3.8 Flash Cross-Domain Brain</h4>
+          <p style="font-size:13px;color:var(--text-secondary);">
+            • <strong>Conversational Insights Console:</strong> Answers complex executive queries across circles (Maharashtra/Pune, Delhi-NCR, Mumbai, Gujarat, UP-West) with exact ticket &amp; RFO citations.<br/>
+            • <strong>Rule-Less Vector Correlation:</strong> Links silent transport anomalies (`VLAN 402`, optical attenuation) to downstream 5G Core &amp; RAN symptoms in sub-second latency.
+          </p>
+        </div>
+
+        <div class="wt-arch-box green-top">
+          <div class="badge badge-resolved" style="margin-bottom:8px;">3. Live Queue &amp; Remediation (Tabs 2 &amp; 3)</div>
+          <h4 style="font-size:15.5px;font-weight:800;margin-bottom:6px;">100 Open Active Incidents + CLI Sandbox</h4>
+          <p style="font-size:13px;color:var(--text-secondary);">
+            • <strong>Synchronized State:</strong> Selecting any of the 100 open tickets in Tab 2 or Tab 3 synchronizes triage, topology, CLI commands, and RCA export.<br/>
+            • <strong>3 Showcase Anchors:</strong> <code>INC-Telco-OPEN-001</code> (5G Core/MTU), <code>OPEN-002</code> (Transport Fiber), <code>OPEN-003</code> (RAN mMIMO Sleep Lock).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step-by-Step Presenter Script -->
+    <div class="vi-section-card">
+      <div class="section-title-group" style="margin-bottom:14px;">
+        <h3>🎙️ Step-by-Step Presenter Talk Track (10-Minute Customer Showcase)</h3>
+        <p>Follow these three acts during the live demonstration with the Vodafone Idea NOC team</p>
+      </div>
+
+      <div class="wt-step-block">
+        <h4>Act 1: Tab 1 — Institutional Knowledge Base &amp; Unsupervised Cluster Discovery (3 mins)</h4>
+        <ul>
+          <li><strong>Start on Tab 1:</strong> Point out the 5 executive KPI cards at the top: <code>1,000 Resolved</code>, <code>100 Open Incidents</code>, <code>450 RAN | 300 Transport | 250 Core</code>, <code>6 Systemic Clusters</code>, and <code>42% Average MTTR Improvement</code>.</li>
+          <li><strong>Click "✨ Analyze 1,000 Historical Tickets with Gemini":</strong> Explain that traditional NOCs spend months writing brittle correlation rules. Here, Gemini scans all 1,000 resolved tickets and RFO post-mortems to discover <strong>6 Systemic Failure Clusters</strong> automatically.</li>
+          <li><strong>Spotlight Cluster 1 (The "Golden Correlation"):</strong> Point out the <strong>46 coordinated historical tickets (<code>INC-Telco-78500</code> through <code>INC-Telco-78545</code>, <code>RFO-Telco-2026-0811</code>)</strong> where a routine transport change set <code>VLAN 402</code> to <code>1420 bytes</code>, silently dropping 3GPP N4 PFCP packets (&gt;1420B with DF-bit set) and causing massive VoNR call drops in Pune.</li>
+          <li><strong>Use the "Ask Gemini" Console:</strong> Select any of the 5 executive query templates from the dropdown (or type a custom question and click <strong>"⚡ Live Vertex AI Call"</strong>) to show executive metrics, RFO citations, and operational guardrails.</li>
+          <li><strong>Filter the 1,000-Ticket Table:</strong> Click <strong>"🎯 Highlight Golden Correlation (46 VLAN 402 Tickets)"</strong> or toggle the multi-select <code>Domain</code> / <code>Severity</code> / <code>Circle</code> chips, then click any ticket row to inspect its full historical RCA modal.</li>
+        </ul>
+      </div>
+
+      <div class="wt-step-block" style="border-left-color:var(--vi-yellow);">
+        <h4>Act 2: Tab 2 — Live Incident Triage &amp; Cross-Domain RCA (4 mins)</h4>
+        <ul>
+          <li><strong>Switch to Tab 2:</strong> Show the prominent dropdown of <strong>100 Open Active Incidents</strong> (45 RAN, 30 Transport, 25 5G Core), defaulting to Featured Anchor #1: <code>INC-Telco-OPEN-001 (P1-Critical | 5G Core | VoNR Drops in Pune)</code>.</li>
+          <li><strong>Review the Left Column:</strong> Point out the affected nodes (<code>UPF-MH-PUN-EDGE-01</code>, <code>SMF-MH-PUN-02</code>) and the <strong>Cross-Domain Telemetry Blast Radius</strong> diagram showing how RAN, IP Transport (<code>VLAN 402</code>), and 5G Core intersect.</li>
+          <li><strong>Click "🔍 Run AI Cross-Domain Triage &amp; RCA" (or "⚡ Live Gemini 3.8 Synthesis"):</strong> Walk through the 5 structured sections:
+            <ol style="padding-left:20px;margin-top:4px;">
+              <li><strong>Operational Impact Assessment:</strong> <code>14.6% VoNR Drop Rate</code>, <code>~28,400 UEs</code>, <code>22 Pune gNodeBs</code>.</li>
+              <li><strong>Cross-Domain Correlation Engine:</strong> Explains why 64-byte N4 heartbeats pass while &gt;1420B VoNR session establishment packets drop on <code>AGG-RTR-MH-PUN-04 [VLAN 402]</code>.</li>
+              <li><strong>Hypothesized Root Cause:</strong> 3GPP TS 29.244 N4 PFCP DF-bit truncation diagnosis.</li>
+              <li><strong>Historical Knowledge Match:</strong> <code>98.4% similarity</code> to <code>INC-Telco-78500</code>–<code>78545</code> and <code>RFO-Telco-2026-0811</code>.</li>
+              <li><strong>Next Step Prompt:</strong> Click <strong>"Proceed to Tab 3: Guided CLI Remediation &amp; RCA Export →"</strong>.</li>
+            </ol>
+          </li>
+          <li><strong>Bonus Showcase Anchors:</strong> Click the quick-select pills for <code>INC-Telco-OPEN-002</code> (Mumbai Backbone Optical Fiber Attenuation &amp; BGP Flapping) and <code>INC-Telco-OPEN-003</code> (Delhi-NCR Connaught Place Massive MIMO 64T64R Sleep Mode Lockup affecting 12,000 subscribers) to show instant multi-scenario versatility.</li>
+        </ul>
+      </div>
+
+      <div class="wt-step-block" style="border-left-color:var(--status-resolved);">
+        <h4>Act 3: Tab 3 — Guided CLI Remediation, Terminal Simulator &amp; Executive RCA Export (3 mins)</h4>
+        <ul>
+          <li><strong>Synchronized Ticket Header:</strong> Point out that Tab 3 automatically tracks the exact ticket selected in Tab 2.</li>
+          <li><strong>Interactive CLI Remediation Playbook:</strong> Show the exact copy-pasteable CLI commands tailored to the ticket:
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>For <code>INC-Telco-OPEN-001</code>: <code>show interface vlan402 | include MTU</code> ➔ <code>configure terminal; interface vlan402; mtu 1500; commit</code> ➔ <code>smf-cli --node SMF-MH-PUN-02 --action reset-pfcp-peer --peer-ip 10.160.44.12</code></li>
+              <li>For <code>INC-Telco-OPEN-002</code>: <code>show optical-power interface TenGigE0/0/0/1</code> ➔ <code>mpls traffic-eng fast-reroute trigger --tunnel-id 104</code></li>
+              <li>For <code>INC-Telco-OPEN-003</code>: <code>gnb-cli --cell 408 --action get-sleep-mode-state</code> ➔ <code>gnb-cli --cell 408 --action override-energy-saving --state active</code></li>
+            </ul>
+          </li>
+          <li><strong>Click "▶ Simulate Pre-Check &amp; Validation":</strong> Watch the live terminal simulator execute each command and light up the green verification badges (<code>✓ MTU Verified: 1500</code>, <code>✓ PFCP Heartbeat: OK</code>, <code>✓ Call Drop Rate: Restored &lt;0.02%</code>).</li>
+          <li><strong>One-Click Executive RCA Report:</strong> Click <strong>"✨ Generate Executive RCA Report"</strong>, then demonstrate <strong>"📋 Copy to Clipboard"</strong> and <strong>"⬇ Download Markdown (.md)"</strong> for immediate executive sign-off.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Visual Screenshots Gallery -->
+    <div class="vi-section-card">
+      <div class="section-title-group">
+        <h3>🖼️ Visual Interface Gallery (myvi.in Signature Theme &amp; NOC Dark Wall Mode)</h3>
+        <p>High-resolution snapshots of each operational view</p>
+      </div>
+
+      <div class="wt-shot-grid">
+        <div class="wt-shot-card">
+          <img src="/static/walkthrough/vi_noc_tab1_clusters.png" alt="Tab 1 Clusters" />
+          <div class="wt-shot-caption">1. Tab 1 — 5 KPI Metrics Bar &amp; 6 Unsupervised Failure Clusters</div>
+        </div>
+        <div class="wt-shot-card">
+          <img src="/static/walkthrough/vi_noc_tab1_insights_table.png" alt="Tab 1 Ask Gemini Console" />
+          <div class="wt-shot-caption">2. Tab 1 — "Ask Gemini" Executive Insights Console &amp; 1,000-Ticket Repository</div>
+        </div>
+        <div class="wt-shot-card">
+          <img src="/static/walkthrough/vi_noc_tab2_triage.png" alt="Tab 2 Live Incident Triage" />
+          <div class="wt-shot-caption">3. Tab 2 — Live Incident Triage &amp; Cross-Domain RCA (INC-Telco-OPEN-001)</div>
+        </div>
+        <div class="wt-shot-card">
+          <img src="/static/walkthrough/vi_noc_tab3_remediation.png" alt="Tab 3 CLI Playbook & RCA Export" />
+          <div class="wt-shot-caption">4. Tab 3 — Interactive CLI Playbook, Pre-Check Simulator &amp; RCA Export</div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</body>
+</html>

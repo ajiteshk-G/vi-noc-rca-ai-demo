@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vi (Vodafone Idea) SuperNOC AI — Cross-Domain RCA & Trouble Ticket Copilot</title>
+  <meta name="description" content="Rule-less Telco NOC Troubleshooting, Cross-Domain RCA, and Automated Trouble Ticketing Platform for Vodafone Idea (Vi) powered by Google Cloud Gemini 3.8 Flash & Vertex AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+
+  <!-- Top myvi.in Enterprise Strip -->
+  <div class="vi-top-strip">
+    <div class="vi-top-strip-left">
+      <span class="vi-strip-pill"><span class="dot-yellow"></span> Vi SuperNOC • Pune &amp; Mumbai National Command Center</span>
+      <span>3GPP Rel-17 5G SA Core • IP/MPLS Transport • 64T64R Massive MIMO RAN</span>
+    </div>
+    <div class="vi-top-strip-right">
+      <span class="vi-strip-pill"><span class="dot-green"></span> Google Cloud Vertex AI • <strong>gemini-3.8-flash</strong> (Global)</span>
+      <span id="live-ist-clock" class="mono-code">IST --:--:--</span>
+    </div>
+  </div>
+
+  <!-- Main Sticky Header (myvi.in Signature Theme) -->
+  <header class="vi-header">
+    <div class="vi-brand-group">
+      <div class="vi-logo-box" title="Vi (Vodafone Idea) Official Brand Mark">
+        <!-- Exact Official Vi Logo from https://www.myvi.in/documents/106724/1272016/Vi-logored-60X60.svg -->
+        <svg width="46" height="46" viewBox="0 0 60 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M54.9693 12.4021C54.9693 15.9539 52.0904 18.8331 48.5384 18.8331C44.9867 18.8331 42.1074 15.9539 42.1074 12.4021C42.1074 8.8504 44.9867 5.97119 48.5384 5.97119C52.0904 5.97119 54.9693 8.8504 54.9693 12.4021Z" fill="url(#vi_paint0_radial)"/>
+          <path d="M54.9693 12.4021C54.9693 15.9539 52.0904 18.8331 48.5384 18.8331C44.9867 18.8331 42.1074 15.9539 42.1074 12.4021C42.1074 8.8504 44.9867 5.97119 48.5384 5.97119C52.0904 5.97119 54.9693 8.8504 54.9693 12.4021Z" fill="url(#vi_paint1_radial)"/>
+          <path d="M54.6966 22.335H43.459V53.9399H54.6966V22.335Z" fill="#EE2737"/>
+          <path d="M13.0261 54.1588H24.1806L16.2231 22.5547H4.96875L13.0261 54.1588Z" fill="#EE2737"/>
+          <path d="M32.0314 54.1588H20.877L28.8345 22.5547H40.0888L32.0314 54.1588Z" fill="#EE2737"/>
+          <defs>
+            <radialGradient id="vi_paint0_radial" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(51.629 10.3167) rotate(147.734) scale(10.5296 9.06235)">
+              <stop offset="0.0887575" stop-color="#FFE436"/>
+              <stop offset="0.518773" stop-color="#FFE31D"/>
+              <stop offset="0.711611" stop-color="#F2BC00"/>
+              <stop offset="0.831973" stop-color="#D89500"/>
+              <stop offset="0.953471" stop-color="#B46100"/>
+            </radialGradient>
+            <radialGradient id="vi_paint1_radial" cx="0" cy="0" r="1" gradientTransform="matrix(2.66638 -1.60421 2.35925 3.92137 51.0026 10.1664)" gradientUnits="userSpaceOnUse">
+              <stop stop-color="white"/>
+              <stop offset="0.325797" stop-color="white" stop-opacity="0.65"/>
+              <stop offset="0.451026" stop-color="white" stop-opacity="0.4"/>
+              <stop offset="0.955086" stop-color="white" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="vi-brand-titles">
+        <h1>
+          Vi Intelligent NOC
+          <span class="vi-tag-yellow">Together for Tomorrow</span>
+        </h1>
+        <div class="vi-brand-subtitle">Rule-Less AI Cross-Domain RCA Copilot • Gemini &amp; Vertex AI</div>
+      </div>
+    </div>
+
+    <!-- 3 Main Operational Navigation Tabs -->
+    <nav class="vi-nav-tabs" aria-label="Main Operational Views">
+      <button id="nav-tab-1" class="vi-tab-btn active" onclick="switchTab(1)">
+        <span>1. Knowledge Base &amp; Clusters</span>
+        <span class="vi-tab-count">1,000 Resolved</span>
+      </button>
+      <button id="nav-tab-2" class="vi-tab-btn" onclick="switchTab(2)">
+        <span>2. Live Incident Triage &amp; RCA</span>
+        <span class="vi-tab-count">100 Open</span>
+      </button>
+      <button id="nav-tab-3" class="vi-tab-btn" onclick="switchTab(3)">
+        <span>3. Guided Remediation &amp; Reports</span>
+        <span class="vi-tab-count">CLI + CAPA</span>
+      </button>
+    </nav>
+
+    <!-- Header Right Controls -->
+    <div class="vi-header-actions">
+      <div class="global-ticket-indicator" onclick="switchTab(2)" title="Click to inspect synchronized active ticket in Tab 2">
+        <span style="font-weight:700;color:var(--text-secondary);">Active Ticket:</span>
+        <span id="header-active-ticket-badge" class="badge badge-p1 mono-code">INC-Telco-OPEN-001</span>
+      </div>
+      <button id="theme-toggle-button" class="theme-toggle-btn" onclick="toggleTheme()" title="Switch between myvi.in Signature Theme and NOC Dark Wall Mode">
+        🌙 NOC Wall Dark
+      </button>
+      <button id="open-script-guide-btn" class="script-guide-btn" onclick="toggleSideWalkthrough(true)">
+        📖 Walkthrough
+      </button>
+      <a href="/walkthrough" target="_blank" class="theme-toggle-btn" style="text-decoration:none;border-color:var(--vi-red);color:var(--vi-red);" title="Open Full Standalone Walkthrough & Architecture Page">
+        ↗ Full Guide
+      </a>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="vi-main-container">
+
+    <!-- ====================================================================
+         TAB 1: INSTITUTIONAL KNOWLEDGE BASE & TICKET CLUSTERS
+         ==================================================================== -->
+    <section id="tab-panel-1" class="tab-panel active">
+
+      <!-- Executive Hero Banner (Tab 1 Overview) -->
+      <div class="vi-hero-inner" style="margin-bottom:18px;">
+        <div class="vi-hero-copy">
+          <div class="vi-hero-eyebrow">⚡ Vodafone Idea (Vi) Network Operations Center • AI Transformation Showcase</div>
+          <h2>Autonomous, "Rule-Less" Cross-Domain Correlation Across RAN, IP Transport &amp; 5G Core</h2>
+          <p>
+            Legacy OSS/fault systems rely on brittle static correlation rules that break whenever topology changes.
+            Vi's Gemini 3.8 Copilot continuously mines <strong>1,000 historical resolved tickets</strong> to uncover silent cross-domain cascades
+            (such as Transport <code>VLAN 402 MTU=1420B</code> truncating 5G Core N4 PFCP packets and causing Pune VoNR drops) and guides L2/L3 engineers
+            through 1-click CLI remediation across <strong>100 live incidents</strong>.
+          </p>
+        </div>
+        <div class="vi-hero-badges">
+          <div class="vi-hero-stat">
+            <span class="stat-val">1,000</span>
+            <span class="stat-lbl">Resolved Repository</span>
+          </div>
+          <div class="vi-hero-stat">
+            <span class="stat-val">100</span>
+            <span class="stat-lbl">Live Open Queue</span>
+          </div>
+          <div class="vi-hero-stat">
+            <span class="stat-val">46 Tickets</span>
+            <span class="stat-lbl">VLAN 402 Golden Cluster</span>
+          </div>
+          <div class="vi-hero-stat">
+            <span class="stat-val">-42%</span>
+            <span class="stat-lbl">Avg MTTR Reduction</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Metrics Bar (Exact 5 Spec Metrics) -->
+      <div class="metrics-bar-grid">
+        <div class="metric-card accent-green">
+          <div class="metric-label">Total Historical Records</div>
+          <div class="metric-value" id="metric-total-hist">1,000 Resolved</div>
+          <div class="metric-sub">100% Indexed with Root Cause &amp; RFO</div>
+        </div>
+        <div class="metric-card accent-cyan">
+          <div class="metric-label">Active Queue</div>
+          <div class="metric-value" id="metric-active-open">100 Open Incidents</div>
+          <div class="metric-sub">45 RAN • 30 Transport • 25 5G Core</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Domain Breakdown</div>
+          <div class="metric-value" style="font-size:18px;">450 RAN | 300 Transport | 250 Core</div>
+          <div class="metric-sub">45% RAN • 30% Transport • 25% 5G Core</div>
+        </div>
+        <div class="metric-card accent-yellow">
+          <div class="metric-label">AI Identified Failure Patterns</div>
+          <div class="metric-value">6 Systemic Clusters</div>
+          <div class="metric-sub">Includes 46-Ticket Golden Correlation</div>
+        </div>
+        <div class="metric-card accent-green">
+          <div class="metric-label">Average MTTR Improvement</div>
+          <div class="metric-value">42%</div>
+          <div class="metric-sub">118m ➔ 14.2m on Cross-Domain P1s</div>
+        </div>
+      </div>
+
+      <!-- Cluster Discovery & Knowledge Extraction -->
+      <div class="vi-section-card">
+        <div class="section-header-row">
+          <div class="section-title-group">
+            <h3>
+              <span>🧠 Cluster Discovery &amp; Institutional Knowledge Extraction</span>
+              <span class="vi-tag-yellow">Zero Manual Rules</span>
+            </h3>
+            <p>Unsupervised semantic clustering across 1,000 historical resolved incidents (RFO post-mortems, alarm signatures, and CLI fixes). Click any cluster card to filter the repository table below.</p>
+          </div>
+          <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+            <button id="btn-clear-cluster-filter" class="vi-btn-secondary" style="display:none;" onclick="filterByCluster(null)">
+              ✕ Clear Cluster Filter
+            </button>
+            <button id="btn-analyze-clusters" class="vi-btn-primary" onclick="runClusterDiscoveryAnimation()">
+              ✨ Analyze 1,000 Historical Tickets with Gemini
+            </button>
+          </div>
+        </div>
+
+        <div id="cluster-analysis-status" style="display:none;margin-bottom:14px;padding:11px 16px;border-radius:12px;background:var(--vi-yellow-soft);color:#1e1f2e;font-weight:700;font-size:13px;border-left:4px solid var(--vi-red);">
+        </div>
+
+        <div id="clusters-container" class="clusters-grid">
+          <!-- Populated dynamically by app.js -->
+        </div>
+      </div>
+
+      <!-- Conversational Executive Insights Console ("Ask Gemini") -->
+      <div class="insights-console-card">
+        <div class="section-header-row" style="margin-bottom:12px;">
+          <div class="section-title-group">
+            <h3>💬 Ask Gemini: Historical Incident &amp; Operations Intelligence</h3>
+            <p>Conversational intelligence bridge across all 1,000 historical tickets, circle MTTR benchmarks, and RFO post-mortems.</p>
+          </div>
+          <span class="gemini-model-tag" id="ask-gemini-model-pill">gemini-3.8-flash • Vertex AI</span>
+        </div>
+
+        <div class="insights-controls-grid">
+          <div>
+            <label for="exec-query-select" class="vi-select-label">Select an Executive Query Template (or ask in free text):</label>
+            <select id="exec-query-select" class="vi-select" onchange="onSelectExecutiveTemplate()">
+              <!-- Populated by app.js with the 5 templates + custom option -->
+            </select>
+          </div>
+
+          <div class="ask-input-row">
+            <input
+              id="exec-query-input"
+              type="text"
+              class="vi-text-input"
+              placeholder="Ask any question about historical tickets, failure trends, node MTTR, or circle patterns..."
+              onkeydown="if(event.key==='Enter'){submitExecutiveQuery(false);}"
+            />
+            <button id="btn-ask-gemini" class="vi-btn-primary" onclick="submitExecutiveQuery(false)">
+              🚀 Ask Gemini
+            </button>
+            <button id="btn-ask-gemini-live" class="vi-btn-secondary" onclick="submitExecutiveQuery(true)" title="Force a fresh live Vertex AI gemini-3.8-flash inference call">
+              ⚡ Live Vertex AI Call
+            </button>
+          </div>
+        </div>
+
+        <!-- Gemini Structured Response Card -->
+        <div id="gemini-insights-output" class="gemini-response-card">
+          <!-- Populated by app.js -->
+        </div>
+      </div>
+
+      <!-- Searchable Historical Ticket Repository Table (1,000 Tickets, 25/page) -->
+      <div class="vi-section-card">
+        <div class="section-header-row">
+          <div class="section-title-group">
+            <h3>🗂️ Historical Resolved Ticket Repository (1,000 Records)</h3>
+            <p>Instant client-side multi-select filtering and search across 450 RAN, 300 Transport, and 250 5G Core resolved incidents (25 records/page).</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <button id="btn-filter-golden" class="vi-btn-secondary" onclick="toggleGoldenFilter()">
+              🎯 Highlight Golden Correlation (46 VLAN 402 Tickets)
+            </button>
+            <button class="vi-btn-secondary" onclick="resetTableFilters()">
+              ↺ Reset All Filters
+            </button>
+          </div>
+        </div>
+
+        <!-- Multi-Select Filters & Search Bar -->
+        <div class="table-filters-bar">
+          <div class="filter-groups-row">
+            <div class="filter-group" id="filter-group-domain">
+              <span class="filter-group-label">Domain:</span>
+              <button class="filter-chip" data-filter-type="domain" data-val="RAN" onclick="toggleMultiFilter('domain','RAN')">RAN (450)</button>
+              <button class="filter-chip" data-filter-type="domain" data-val="Transport" onclick="toggleMultiFilter('domain','Transport')">Transport (300)</button>
+              <button class="filter-chip" data-filter-type="domain" data-val="Core" onclick="toggleMultiFilter('domain','Core')">Core (250)</button>
+            </div>
+
+            <div class="filter-group" id="filter-group-severity">
+              <span class="filter-group-label">Severity:</span>
+              <button class="filter-chip" data-filter-type="severity" data-val="P1-Critical" onclick="toggleMultiFilter('severity','P1-Critical')">P1-Critical</button>
+              <button class="filter-chip" data-filter-type="severity" data-val="P2-Major" onclick="toggleMultiFilter('severity','P2-Major')">P2-Major</button>
+              <button class="filter-chip" data-filter-type="severity" data-val="P3-Minor" onclick="toggleMultiFilter('severity','P3-Minor')">P3-Minor</button>
+            </div>
+
+            <div class="filter-group" id="filter-group-circle">
+              <span class="filter-group-label">Circle:</span>
+              <button class="filter-chip" data-filter-type="circle" data-val="Maharashtra/Pune" onclick="toggleMultiFilter('circle','Maharashtra/Pune')">Maharashtra/Pune</button>
+              <button class="filter-chip" data-filter-type="circle" data-val="Delhi-NCR" onclick="toggleMultiFilter('circle','Delhi-NCR')">Delhi-NCR</button>
+              <button class="filter-chip" data-filter-type="circle" data-val="Gujarat" onclick="toggleMultiFilter('circle','Gujarat')">Gujarat</button>
+              <button class="filter-chip" data-filter-type="circle" data-val="Mumbai" onclick="toggleMultiFilter('circle','Mumbai')">Mumbai</button>
+              <button class="filter-chip" data-filter-type="circle" data-val="UP-West" onclick="toggleMultiFilter('circle','UP-West')">UP-West</button>
+            </div>
+          </div>
+
+          <div class="ask-input-row">
+            <input
+              id="historical-search-input"
+              type="text"
+              class="vi-text-input"
+              placeholder="Real-time search across ticket_id (e.g. INC-Telco-78500), affected_nodes (VLAN 402, UPF-MH-PUN-EDGE-01), alarm_summary, or RFO..."
+              oninput="onHistoricalSearchInput()"
+            />
+            <span id="table-showing-summary" style="font-size:12.5px;font-weight:700;color:var(--text-secondary);">
+              Showing 1–25 of 1,000 resolved tickets
+            </span>
+          </div>
+        </div>
+
+        <!-- Paginated Data Table -->
+        <div class="table-wrapper">
+          <table class="vi-table" id="historical-tickets-table">
+            <thead>
+              <tr>
+                <th>Ticket ID</th>
+                <th>Severity</th>
+                <th>Domain</th>
+                <th>Circle</th>
+                <th>Affected Network Elements</th>
+                <th>Alarm Summary &amp; Root Cause</th>
+                <th>MTTR</th>
+                <th>RFO Citation</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="historical-table-body">
+              <!-- Populated by app.js (25 rows per page) -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination Controls -->
+        <div class="pagination-bar">
+          <div id="pagination-info" style="font-size:12.5px;font-weight:700;color:var(--text-secondary);">
+            Page 1 of 40 (25 records per page)
+          </div>
+          <div class="pagination-controls">
+            <button class="vi-btn-secondary" id="page-first-btn" onclick="goToPage(1)">« First</button>
+            <button class="vi-btn-secondary" id="page-prev-btn" onclick="changePage(-1)">‹ Prev</button>
+            <span id="page-number-badge" class="badge badge-domain mono-code" style="padding:7px 14px;">Page 1 / 40</span>
+            <button class="vi-btn-secondary" id="page-next-btn" onclick="changePage(1)">Next ›</button>
+            <button class="vi-btn-secondary" id="page-last-btn" onclick="goToPage(999)">Last »</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 2: LIVE INCIDENT TRIAGE & CROSS-DOMAIN RCA
+         ==================================================================== -->
+    <section id="tab-panel-2" class="tab-panel">
+
+      <!-- Active Ticket Selector (Header Dropdown Synchronized with Tab 3) -->
+      <div class="ticket-selector-banner">
+        <div class="selector-top-row">
+          <div>
+            <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:var(--vi-yellow-bright);letter-spacing:0.05em;">
+              Synchronized Global Queue • 100 Active Unresolved Incidents (45 RAN • 30 Transport • 25 5G Core)
+            </div>
+            <label for="tab2-ticket-select" style="font-size:16px;font-weight:800;display:block;margin-top:3px;">
+              Select Open Ticket to Triage (100 Active Incidents):
+            </label>
+          </div>
+          <div class="anchor-quick-pills">
+            <span style="font-size:11.5px;font-weight:700;color:#cbd5e1;">Showcase Anchors:</span>
+            <button id="pill-open-001" class="anchor-pill-btn active" onclick="selectOpenTicket('INC-Telco-OPEN-001')">
+              🔥 INC-Telco-OPEN-001 (P1 • 5G Core VoNR / MTU)
+            </button>
+            <button id="pill-open-002" class="anchor-pill-btn" onclick="selectOpenTicket('INC-Telco-OPEN-002')">
+              ⚡ INC-Telco-OPEN-002 (P1 • Transport Fiber / BGP)
+            </button>
+            <button id="pill-open-003" class="anchor-pill-btn" onclick="selectOpenTicket('INC-Telco-OPEN-003')">
+              📡 INC-Telco-OPEN-003 (P2 • RAN mMIMO Sleep Lock)
+            </button>
+          </div>
+        </div>
+
+        <select id="tab2-ticket-select" class="vi-select" onchange="selectOpenTicket(this.value)">
+          <!-- Populated with all 100 Open Active Tickets -->
+        </select>
+      </div>
+
+      <!-- Tab 2 Main Grid: Left = Active Ticket Summary Card, Right = Copilot Diagnostic Console -->
+      <div class="triage-grid">
+
+        <!-- Left Column: Active Ticket Summary Card + Cross-Domain Topology -->
+        <div>
+          <div class="vi-section-card">
+            <div class="section-header-row" style="margin-bottom:10px;">
+              <div class="section-title-group">
+                <h3>📋 Active Ticket Summary Card</h3>
+                <p>Live OSS alarm metadata and affected network elements</p>
+              </div>
+              <span id="t2-severity-badge" class="badge badge-p1">P1-Critical</span>
+            </div>
+
+            <div id="t2-ticket-metadata" class="metadata-kv-list">
+              <!-- Populated by app.js -->
+            </div>
+
+            <div style="margin-top:16px;padding:14px;border-radius:12px;background:var(--bg-promo);border-left:4px solid var(--vi-red);">
+              <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:var(--vi-red);margin-bottom:4px;">
+                Current Alarm Summary
+              </div>
+              <div id="t2-alarm-summary" style="font-size:13.5px;font-weight:700;color:var(--text-primary);">
+              </div>
+            </div>
+          </div>
+
+          <!-- Cross-Domain Topology Blast Radius Card -->
+          <div class="vi-section-card">
+            <div class="section-title-group" style="margin-bottom:12px;">
+              <h3>🕸️ Cross-Domain Telemetry Blast Radius</h3>
+              <p>Multi-layer correlation path across RAN, IP Transport, and 5G Core</p>
+            </div>
+            <div id="t2-topology-container" class="topology-flow">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: Copilot Diagnostic Console -->
+        <div>
+          <div class="vi-section-card">
+            <div class="section-header-row">
+              <div class="section-title-group">
+                <h3>
+                  <span>🤖 Gemini Copilot Diagnostic Console</span>
+                  <span class="vi-tag-yellow">Cross-Domain RCA</span>
+                </h3>
+                <p>Rule-less multi-domain correlation against 1,000 historical tickets &amp; 3GPP protocol signatures</p>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button id="btn-run-triage" class="vi-btn-primary" onclick="runCopilotTriage(false)">
+                  🔍 Run AI Cross-Domain Triage &amp; RCA
+                </button>
+                <button id="btn-run-triage-live" class="vi-btn-secondary" onclick="runCopilotTriage(true)" title="Invoke live Vertex AI gemini-3.8-flash deep protocol synthesis">
+                  ⚡ Live Gemini 3.8 Synthesis
+                </button>
+              </div>
+            </div>
+
+            <!-- Dynamic Gemini Reasoning Output (5 Required Sections) -->
+            <div id="t2-copilot-output">
+              <!-- Populated by app.js -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ====================================================================
+         TAB 3: GUIDED REMEDIATION & REPORTS
+         ==================================================================== -->
+    <section id="tab-panel-3" class="tab-panel">
+
+      <!-- Synchronized Ticket Header -->
+      <div class="ticket-selector-banner">
+        <div class="selector-top-row">
+          <div>
+            <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:var(--vi-yellow-bright);letter-spacing:0.05em;">
+              Synchronized with Tab 2 • Closed-Loop CLI Playbook &amp; Executive Post-Mortem Generator
+            </div>
+            <label for="tab3-ticket-select" style="font-size:16px;font-weight:800;display:block;margin-top:3px;">
+              Active Remediating Ticket (100 Open Tickets):
+            </label>
+          </div>
+          <div class="anchor-quick-pills">
+            <button id="t3-pill-open-001" class="anchor-pill-btn active" onclick="selectOpenTicket('INC-Telco-OPEN-001')">
+              🔥 INC-Telco-OPEN-001 (Core/MTU)
+            </button>
+            <button id="t3-pill-open-002" class="anchor-pill-btn" onclick="selectOpenTicket('INC-Telco-OPEN-002')">
+              ⚡ INC-Telco-OPEN-002 (Transport Fiber)
+            </button>
+            <button id="t3-pill-open-003" class="anchor-pill-btn" onclick="selectOpenTicket('INC-Telco-OPEN-003')">
+              📡 INC-Telco-OPEN-003 (RAN mMIMO)
+            </button>
+          </div>
+        </div>
+
+        <select id="tab3-ticket-select" class="vi-select" onchange="selectOpenTicket(this.value)">
+          <!-- Populated with all 100 Open Active Tickets -->
+        </select>
+      </div>
+
+      <!-- Tab 3 Main Grid: Left = Interactive Remediation Playbook + Simulator, Right = Executive RCA Report -->
+      <div class="triage-grid">
+
+        <!-- Left Column: Interactive CLI Playbook & Terminal Simulator -->
+        <div>
+          <div class="vi-section-card">
+            <div class="section-header-row">
+              <div class="section-title-group">
+                <h3>🛠️ Interactive CLI Remediation Playbook</h3>
+                <p id="t3-playbook-subtitle">Tailored 3GPP / Router / SMO CLI sequence validated against historical RFO</p>
+              </div>
+              <button class="vi-btn-secondary" onclick="copyAllPlaybookCommands()">
+                📋 Copy All CLI Commands
+              </button>
+            </div>
+
+            <div id="t3-playbook-steps">
+              <!-- Populated by app.js -->
+            </div>
+
+            <!-- Interactive Execution Simulator -->
+            <div style="margin-top:20px;padding-top:18px;border-top:2px dashed var(--border-warm);">
+              <div class="section-header-row" style="margin-bottom:10px;">
+                <div class="section-title-group">
+                  <h3>💻 Interactive Execution Simulator</h3>
+                  <p>Run automated pre-checks, apply CLI remediation in sandbox, and verify post-change KPIs</p>
+                </div>
+                <button id="btn-simulate-cli" class="vi-btn-yellow" onclick="runTerminalSimulation()">
+                  ▶ Simulate Pre-Check &amp; Validation
+                </button>
+              </div>
+
+              <div id="t3-verification-badges" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+                <!-- Populated on simulation completion -->
+              </div>
+
+              <div id="t3-terminal-output" class="terminal-window">
+                <!-- Populated by app.js -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: One-Click Executive RCA Report Generator -->
+        <div>
+          <div class="vi-section-card">
+            <div class="section-header-row">
+              <div class="section-title-group">
+                <h3>
+                  <span>📄 One-Click Executive RCA Report Generator</span>
+                  <span class="vi-tag-yellow">Publication Ready</span>
+                </h3>
+                <p>Generates formal Markdown post-mortem with Timeline, 3GPP Root Cause, and CAPA Guardrails</p>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button id="btn-generate-rca" class="vi-btn-primary" onclick="generateExecutiveRcaReport()">
+                  ✨ Generate Executive RCA Report
+                </button>
+              </div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+              <div id="rca-report-status" style="font-size:12.5px;font-weight:700;color:var(--status-resolved);">
+                ✓ Synchronized with <span id="rca-ticket-label" class="mono-code">INC-Telco-OPEN-001</span>
+              </div>
+              <div style="display:flex;gap:8px;">
+                <button id="btn-copy-rca" class="vi-btn-secondary" onclick="copyRcaMarkdown()">
+                  📋 Copy to Clipboard
+                </button>
+                <button id="btn-download-rca" class="vi-btn-secondary" onclick="downloadRcaMarkdown()">
+                  ⬇ Download Markdown (.md)
+                </button>
+              </div>
+            </div>
+
+            <pre id="t3-rca-markdown-box" class="rca-markdown-preview"></pre>
+          </div>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Floating Right-Side Walkthrough Dock Button -->
+  <aside class="vi-side-walkthrough-dock" aria-label="Walkthrough Side Dock">
+    <button class="vi-side-dock-btn" onclick="toggleSideWalkthrough(true)" title="Open Interactive Presenter Walkthrough & Demo Guide">
+      📖 WALKTHROUGH &amp; SCRIPT
+    </button>
+  </aside>
+
+  <!-- Right-Side Slide-Over Walkthrough Drawer -->
+  <div id="vi-side-drawer-backdrop" class="vi-side-drawer-backdrop" onclick="toggleSideWalkthrough(false)"></div>
+  <aside id="vi-side-drawer" class="vi-side-drawer" aria-label="Interactive Walkthrough Drawer">
+    <div class="vi-side-drawer-header">
+      <div>
+        <div style="font-size:10.5px;font-weight:800;text-transform:uppercase;color:var(--vi-yellow-bright);letter-spacing:0.05em;">
+          Vodafone Idea (Vi) SuperNOC Showcase
+        </div>
+        <h3 style="font-size:16.5px;font-weight:800;margin-top:2px;">📖 Presenter Walkthrough &amp; Script</h3>
+      </div>
+      <button class="vi-btn-secondary" style="padding:6px 12px;font-size:12px;" onclick="toggleSideWalkthrough(false)">✕ Close</button>
+    </div>
+
+    <div class="vi-side-drawer-body">
+      <!-- Link to Full Standalone Page -->
+      <div style="display:flex;gap:8px;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;background:var(--bg-promo);border:1.5px solid var(--vi-red);">
+        <div>
+          <div style="font-size:12.5px;font-weight:800;color:var(--text-primary);">Standalone Walkthrough &amp; Gallery</div>
+          <div style="font-size:11.5px;color:var(--text-secondary);">Open full-page architecture &amp; screenshots in a new tab</div>
+        </div>
+        <a href="/walkthrough" target="_blank" class="vi-btn-primary" style="text-decoration:none;padding:8px 14px;font-size:12px;white-space:nowrap;">
+          ↗ Open /walkthrough
+        </a>
+      </div>
+
+      <!-- 1-Click Interactive Demo Driver Buttons -->
+      <div style="display:flex;flex-direction:column;gap:7px;">
+        <div style="font-size:11.5px;font-weight:800;text-transform:uppercase;color:var(--vi-red);letter-spacing:0.04em;">
+          ⚡ 1-Click Interactive Demo Driver (Auto-Jumps UI)
+        </div>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab1_clusters')">
+          <span>1. Tab 1: Run Gemini 1,000-Ticket Cluster Discovery</span>
+          <span class="badge badge-domain">Tab 1 →</span>
+        </button>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab1_golden')">
+          <span>2. Tab 1: Filter 46 Golden Correlation (VLAN 402) Tickets</span>
+          <span class="badge badge-p1">46 P1s →</span>
+        </button>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab2_open001')">
+          <span>3. Tab 2: Triage Anchor #1 — INC-Telco-OPEN-001 (5G Core/MTU)</span>
+          <span class="badge badge-p1">Tab 2 →</span>
+        </button>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab2_open002')">
+          <span>4. Tab 2: Triage Anchor #2 — INC-Telco-OPEN-002 (Mumbai Fiber)</span>
+          <span class="badge badge-p1">Tab 2 →</span>
+        </button>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab2_open003')">
+          <span>5. Tab 2: Triage Anchor #3 — INC-Telco-OPEN-003 (RAN mMIMO)</span>
+          <span class="badge badge-p2">Tab 2 →</span>
+        </button>
+        <button class="wt-quick-jump-btn" onclick="quickJumpDemoStep('tab3_sim')">
+          <span>6. Tab 3: Execute CLI Pre-Check Simulator &amp; RCA Report</span>
+          <span class="badge badge-resolved">Tab 3 →</span>
+        </button>
+      </div>
+
+      <!-- Talk Track By Tab -->
+      <div style="padding:14px;border-radius:12px;background:var(--bg-surface-alt);border-left:4px solid var(--vi-red);font-size:12.5px;line-height:1.55;">
+        <strong>Act 1 — Institutional Knowledge Base (Tab 1)</strong>
+        <ul style="margin-top:5px;padding-left:18px;">
+          <li><strong>1,000 Historical Resolved Tickets:</strong> 450 RAN (45%) | 300 Transport (30%) | 250 5G Core (25%).</li>
+          <li><strong>Golden Correlation Cluster (Cluster 1):</strong> 46 coordinated tickets (<code>INC-Telco-78500</code>–<code>78545</code>, <code>RFO-Telco-2026-0811</code>) where Transport <code>VLAN 402 MTU=1420B</code> truncated DF-marked N4 PFCP packets and caused Pune VoNR call drops (&gt;14%).</li>
+          <li><strong>"Ask Gemini" Console:</strong> Use the 5 executive query templates or run a live <code>gemini-3.8-flash</code> custom query.</li>
+        </ul>
+      </div>
+
+      <div style="padding:14px;border-radius:12px;background:var(--bg-surface-alt);border-left:4px solid var(--vi-yellow);font-size:12.5px;line-height:1.55;">
+        <strong>Act 2 — Live Cross-Domain Triage &amp; RCA (Tab 2)</strong>
+        <ul style="margin-top:5px;padding-left:18px;">
+          <li><strong>100 Open Active Queue:</strong> 45 RAN, 30 Transport, 25 5G Core incidents across 5 Vi circles.</li>
+          <li><strong>Rule-Less Correlation:</strong> For <code>INC-Telco-OPEN-001</code>, Gemini correlates Core N4 timeouts on <code>UPF-MH-PUN-EDGE-01</code> / <code>SMF-MH-PUN-02</code> to Transport <code>VLAN 402 (1420B)</code> and 22 Pune RAN cells with <strong>98.4% similarity</strong> to <code>RFO-Telco-2026-0811</code>.</li>
+        </ul>
+      </div>
+
+      <div style="padding:14px;border-radius:12px;background:var(--bg-surface-alt);border-left:4px solid var(--status-resolved);font-size:12.5px;line-height:1.55;">
+        <strong>Act 3 — Guided CLI Remediation &amp; RCA Export (Tab 3)</strong>
+        <ul style="margin-top:5px;padding-left:18px;">
+          <li><strong>Synchronized State:</strong> Automatically mirrors the active ticket from Tab 2.</li>
+          <li><strong>CLI Playbook &amp; Simulator:</strong> Copy-paste CLI fixes, click <strong>"▶ Simulate Pre-Check &amp; Validation"</strong> to verify <code>✓ MTU Verified: 1500</code>, <code>✓ PFCP Heartbeat: OK</code>, <code>✓ Call Drop Rate: Restored &lt;0.02%</code>, and export the Markdown RCA report.</li>
+        </ul>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Modal: Historical Ticket Detail / Demo Script Walkthrough -->
+  <div id="vi-modal-backdrop" class="vi-modal-backdrop" onclick="if(event.target===this){closeModal();}">
+    <div class="vi-modal-card">
+      <div class="section-header-row" style="margin-bottom:14px;">
+        <h3 id="modal-title" style="font-size:18px;font-weight:800;">🎯 Vi SuperNOC Demo Script &amp; Presenter Guide</h3>
+        <button class="vi-btn-secondary" onclick="closeModal()">✕ Close</button>
+      </div>
+      <div id="modal-body-content" style="font-size:13.5px;line-height:1.6;">
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
